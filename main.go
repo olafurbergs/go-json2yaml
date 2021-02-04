@@ -2,41 +2,48 @@ package main
 
 import (
 	"encoding/json"
-	"flag"
+	"bufio"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"os"
 
 	yaml "gopkg.in/yaml.v2"
 )
 
 func main() {
-	pInput := flag.String("input", "", "input json file")
-	flag.Parse()
+	info, err := os.Stdin.Stat()
+    if err != nil {
+        panic(err)
+    }
 
-	if *pInput == "" {
-		fmt.Println("Error. Input is empty")
-		flag.PrintDefaults()
-		os.Exit(-1)
+	if info.Mode()&os.ModeCharDevice != 0 || info.Size() <= 0 {
+		fmt.Println("The command is intended to work with pipes.")
+		fmt.Println("Usage: go-yaml2json | gocowsay")
+		return
 	}
 
-	inputBytes, err := ioutil.ReadFile(*pInput)
-	if err != nil {
-		fmt.Printf("Error reading input %s: %v\n", *pInput, err)
-		os.Exit(-1)
+	reader := bufio.NewReader(os.Stdin)
+	var output []rune
+
+	for {
+		input, _, err := reader.ReadRune()
+		if err != nil && err == io.EOF {
+			break
+		}
+		output = append(output, input)
 	}
 
 	var obj interface{}
-	err = json.Unmarshal(inputBytes, &obj)
+	err = json.Unmarshal([]byte(string(output)), &obj)
 	if err != nil {
-		fmt.Printf("Error unmarshalling input. Is it valid JSON? %s: %v\n", *pInput, err)
+		fmt.Printf("Error unmarshalling input. Is it valid JSON? %s: %v\n", string(output), err)
 		os.Exit(-1)
 	}
 
 	if obj != nil {
 		yamlBytes, err := yaml.Marshal(obj)
 		if err != nil {
-			fmt.Printf("Error marshaling into YAML from JSON file %s: %v\n", *pInput, err)
+			fmt.Printf("Error marshaling into YAML from JSON %s: %v\n", string(output), err)
 			os.Exit(-1)
 		}
 
