@@ -2,7 +2,7 @@
 
 This is a fork of github.com/kalyan02/go-json2yaml
 
-Getting to know and use json2yaml alot at work, the time came I needed to reverse the procedure, so this is the brother of json2yaml derived from the good work of kalyan02.
+Getting to know and use yaml2json alot at work, the time came I needed to reverse the procedure, so this is the brother of yaml2json derived from the good work of kalyan02.
 
 
 
