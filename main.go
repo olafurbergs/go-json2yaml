@@ -18,7 +18,7 @@ func main() {
 
 	if info.Mode()&os.ModeCharDevice != 0 || info.Size() <= 0 {
 		fmt.Println("The command is intended to work with pipes.")
-		fmt.Println("Usage: yaml2json < example.json > example.yaml")
+		fmt.Println("Usage: json2yaml < example.json > example.yaml")
 		return
 	}
 
